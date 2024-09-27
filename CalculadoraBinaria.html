@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora YouTube - Bases e Operações</title>
+    <link rel="stylesheet" href="calculadoracss.css">
+</head>
+
+<body>
+
+    <div class="titulo">
+        <h2>The Last Maxine</h2>
+    </div>
+    <div class="obstaculo"></div>
+
+    <br><br>
+    <h3>Calculadora com Bases</h3>
+
+    <div class="calcmax">
+        <div class="calc">
+
+            <input id="inputValue1" type="text" placeholder="Digite o primeiro valor"
+                oninput="validateInput(this, 'inputBase1')">
+            <select id="inputBase1">
+                <option value="decimal">Decimal</option>
+                <option value="hexadecimal">Hexadecimal</option>
+                <option value="octal">Octal</option>
+                <option value="binario">Binário</option>
+            </select>
+        </div>
+        <br>
+        <div class="calc2">
+            <input id="inputValue2" type="text" placeholder="Digite o segundo valor"
+                oninput="validateInput(this, 'inputBase2')">
+            <select id="inputBase2">
+                <option value="decimal">Decimal</option>
+                <option value="hexadecimal">Hexadecimal</option>
+                <option value="octal">Octal</option>
+                <option value="binario">Binário</option>
+            </select>
+        </div>
+    </div>
+    <div class="calc3">
+        <select id="operation">
+            <option value="add">Somar</option>
+            <option value="subtract">Subtrair</option>
+            <option value="multiply">Multiplicar</option>
+            <option value="divide">Dividir</option>
+            <option value="convert">Converter</option>
+        </select>
+    </div>
+
+    <br>
+    <br><br>
+    <div class="executar">
+        <button onclick="calculate()">Executar</button>
+    </div>
+
+
+    <div id="result" class="demo"></div>
+
+    <script>
+        function validateInput(input, baseSelectId) {
+            const base = document.getElementById(baseSelectId).value;
+            const regex = base === 'decimal' ? /^[0-9]*$/ :
+                base === 'hexadecimal' ? /^[0-9A-Fa-f]*$/ :
+                    base === 'octal' ? /^[0-7]*$/ :
+                        base === 'binario' ? /^[01]*$/ :
+                            /^[0-9]*$/;
+            input.value = input.value.replace(/[^0-9A-Fa-f]/g, ''); // Filter out invalid characters
+            if (!regex.test(input.value)) {
+                input.value = ''; // Clear the input if invalid
+            }
+        }
+
+        function calculate() {
+            var value1 = document.getElementById('inputValue1').value;
+            var value2 = document.getElementById('inputValue2').value;
+            var inputBase1 = document.getElementById('inputBase1').value;
+            var inputBase2 = document.getElementById('inputBase2').value;
+            var operation = document.getElementById('operation').value;
+
+            // Converter valores para decimal
+            var base1 = inputBase1 === 'hexadecimal' ? 16 : inputBase1 === 'octal' ? 8 : inputBase1 === 'binario' ? 2 : 10;
+            var base2 = inputBase2 === 'hexadecimal' ? 16 : inputBase2 === 'octal' ? 8 : inputBase2 === 'binario' ? 2 : 10;
+
+            var decimalValue1 = parseInt(value1, base1);
+            var decimalValue2 = parseInt(value2, base2);
+
+            if (isNaN(decimalValue1) || (operation !== 'convert' && isNaN(decimalValue2))) {
+                alert('Por favor, insira valores válidos.');
+                return;
+            }
+
+            var resultDecimal;
+
+            if (operation === 'convert') {
+                resultDecimal = decimalValue1;
+            } else {
+                // Realizar a operação
+                switch (operation) {
+                    case 'add':
+                        resultDecimal = decimalValue1 + decimalValue2;
+                        break;
+                    case 'subtract':
+                        resultDecimal = decimalValue1 - decimalValue2;
+                        break;
+                    case 'multiply':
+                        resultDecimal = decimalValue1 * decimalValue2;
+                        break;
+                    case 'divide':
+                        if (decimalValue2 === 0) {
+                            alert('Divisão por zero não é permitida.');
+                            return;
+                        }
+                        resultDecimal = decimalValue1 / decimalValue2;
+                        break;
+                    default:
+                        alert('Operação inválida.');
+                        return;
+                }
+            }
+
+            // Exibir resultado em todas as bases
+            var resultHexadecimal = resultDecimal.toString(16).toUpperCase();
+            var resultOctal = resultDecimal.toString(8);
+            var resultBinario = resultDecimal.toString(2);
+            var resultDecimalStr = resultDecimal.toString(10);
+
+            document.getElementById('result').innerHTML = `
+                <b>Decimal:</b> ${resultDecimalStr} <br>
+                <b>Hexadecimal:</b> ${resultHexadecimal} <br>
+                <b>Octal:</b> ${resultOctal} <br>
+                <b>Binário:</b> ${resultBinario}
+            `;
+        }
+    </script>
+</body>
+
+</html>
